@@ -1,8 +1,8 @@
-cmd_/home/roboevt/dev/522/final/led-matrix-control.o := arm-linux-gnueabihf-gcc -Wp,-MMD,/home/roboevt/dev/522/final/.led-matrix-control.o.d  -nostdinc -isystem /usr/lib/gcc-cross/arm-linux-gnueabihf/9/include -I./arch/arm/include -I./arch/arm/include/generated  -I./include -I./arch/arm/include/uapi -I./arch/arm/include/generated/uapi -I./include/uapi -I./include/generated/uapi -include ./include/linux/kconfig.h -include ./include/linux/compiler_types.h -D__KERNEL__ -mlittle-endian -fmacro-prefix-map=./= -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE -Werror=implicit-function-declaration -Werror=implicit-int -Werror=return-type -Wno-format-security -std=gnu89 -fno-dwarf2-cfi-asm -fno-omit-frame-pointer -mapcs -mno-sched-prolog -fno-ipa-sra -mabi=aapcs-linux -mfpu=vfp -marm -Wa,-mno-warn-deprecated -D__LINUX_ARM_ARCH__=7 -march=armv7-a -msoft-float -Uarm -fno-delete-null-pointer-checks -Wno-frame-address -Wno-format-truncation -Wno-format-overflow -Wno-address-of-packed-member -O2 --param=allow-store-data-races=0 -Wframe-larger-than=1024 -fstack-protector-strong -Wno-unused-but-set-variable -Wimplicit-fallthrough -Wno-unused-const-variable -fno-omit-frame-pointer -fno-optimize-sibling-calls -pg -Wdeclaration-after-statement -Wvla -Wno-pointer-sign -Wno-stringop-truncation -Wno-array-bounds -Wno-stringop-overflow -Wno-restrict -Wno-maybe-uninitialized -fno-strict-overflow -fno-stack-check -fconserve-stack -Werror=date-time -Werror=incompatible-pointer-types -Werror=designated-init -Wno-packed-not-aligned -std=gnu99  -DMODULE  -DKBUILD_BASENAME='"led_matrix_control"' -DKBUILD_MODNAME='"led_matrix_control"' -c -o /home/roboevt/dev/522/final/led-matrix-control.o /home/roboevt/dev/522/final/led-matrix-control.c
+cmd_/home/roboevt/dev/522/final/led-matrix-module.o := arm-linux-gnueabihf-gcc -Wp,-MMD,/home/roboevt/dev/522/final/.led-matrix-module.o.d  -nostdinc -isystem /usr/lib/gcc-cross/arm-linux-gnueabihf/9/include -I./arch/arm/include -I./arch/arm/include/generated  -I./include -I./arch/arm/include/uapi -I./arch/arm/include/generated/uapi -I./include/uapi -I./include/generated/uapi -include ./include/linux/kconfig.h -include ./include/linux/compiler_types.h -D__KERNEL__ -mlittle-endian -fmacro-prefix-map=./= -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE -Werror=implicit-function-declaration -Werror=implicit-int -Werror=return-type -Wno-format-security -std=gnu89 -fno-dwarf2-cfi-asm -fno-omit-frame-pointer -mapcs -mno-sched-prolog -fno-ipa-sra -mabi=aapcs-linux -mfpu=vfp -marm -Wa,-mno-warn-deprecated -D__LINUX_ARM_ARCH__=7 -march=armv7-a -msoft-float -Uarm -fno-delete-null-pointer-checks -Wno-frame-address -Wno-format-truncation -Wno-format-overflow -Wno-address-of-packed-member -O2 --param=allow-store-data-races=0 -Wframe-larger-than=1024 -fstack-protector-strong -Wno-unused-but-set-variable -Wimplicit-fallthrough -Wno-unused-const-variable -fno-omit-frame-pointer -fno-optimize-sibling-calls -pg -Wdeclaration-after-statement -Wvla -Wno-pointer-sign -Wno-stringop-truncation -Wno-array-bounds -Wno-stringop-overflow -Wno-restrict -Wno-maybe-uninitialized -fno-strict-overflow -fno-stack-check -fconserve-stack -Werror=date-time -Werror=incompatible-pointer-types -Werror=designated-init -Wno-packed-not-aligned -std=gnu99  -DMODULE  -DKBUILD_BASENAME='"led_matrix_module"' -DKBUILD_MODNAME='"led_matrix"' -c -o /home/roboevt/dev/522/final/led-matrix-module.o /home/roboevt/dev/522/final/led-matrix-module.c
 
-source_/home/roboevt/dev/522/final/led-matrix-control.o := /home/roboevt/dev/522/final/led-matrix-control.c
+source_/home/roboevt/dev/522/final/led-matrix-module.o := /home/roboevt/dev/522/final/led-matrix-module.c
 
-deps_/home/roboevt/dev/522/final/led-matrix-control.o := \
+deps_/home/roboevt/dev/522/final/led-matrix-module.o := \
   include/linux/kconfig.h \
     $(wildcard include/config/cc/version/text.h) \
     $(wildcard include/config/cpu/big/endian.h) \
@@ -17,19 +17,17 @@ deps_/home/roboevt/dev/522/final/led-matrix-control.o := \
     $(wildcard include/config/arm64.h) \
     $(wildcard include/config/retpoline.h) \
     $(wildcard include/config/arch/use/builtin/bswap.h) \
-  include/linux/delay.h \
-  include/linux/kernel.h \
-    $(wildcard include/config/preempt/voluntary.h) \
-    $(wildcard include/config/debug/atomic/sleep.h) \
-    $(wildcard include/config/preempt/rt.h) \
-    $(wildcard include/config/mmu.h) \
-    $(wildcard include/config/prove/locking.h) \
-    $(wildcard include/config/smp.h) \
-    $(wildcard include/config/panic/timeout.h) \
-    $(wildcard include/config/tracing.h) \
-    $(wildcard include/config/ftrace/mcount/record.h) \
-  include/linux/limits.h \
-  include/uapi/linux/limits.h \
+  include/linux/gpio.h \
+    $(wildcard include/config/gpiolib.h) \
+    $(wildcard include/config/arch/have/custom/gpio/h.h) \
+  include/linux/errno.h \
+  include/uapi/linux/errno.h \
+  arch/arm/include/generated/uapi/asm/errno.h \
+  include/uapi/asm-generic/errno.h \
+  include/uapi/asm-generic/errno-base.h \
+  arch/arm/include/asm/gpio.h \
+    $(wildcard include/config/arch/nr/gpio.h) \
+  include/asm-generic/gpio.h \
   include/linux/types.h \
     $(wildcard include/config/have/uid16.h) \
     $(wildcard include/config/uid16.h) \
@@ -49,18 +47,6 @@ deps_/home/roboevt/dev/522/final/led-matrix-control.o := \
   include/linux/compiler_types.h \
   arch/arm/include/uapi/asm/posix_types.h \
   include/uapi/asm-generic/posix_types.h \
-  include/vdso/limits.h \
-  include/linux/linkage.h \
-    $(wildcard include/config/arch/use/sym/annotations.h) \
-  include/linux/stringify.h \
-  include/linux/export.h \
-    $(wildcard include/config/modversions.h) \
-    $(wildcard include/config/module/rel/crcs.h) \
-    $(wildcard include/config/have/arch/prel32/relocations.h) \
-    $(wildcard include/config/modules.h) \
-    $(wildcard include/config/trim/unused/ksyms.h) \
-    $(wildcard include/config/unused/symbols.h) \
-  arch/arm/include/asm/linkage.h \
   include/linux/compiler.h \
     $(wildcard include/config/trace/branch/profiling.h) \
     $(wildcard include/config/profile/all/branches.h) \
@@ -72,174 +58,17 @@ deps_/home/roboevt/dev/522/final/led-matrix-control.o := \
   include/linux/kcsan-checks.h \
     $(wildcard include/config/kcsan.h) \
     $(wildcard include/config/kcsan/ignore/atomics.h) \
-  include/linux/bitops.h \
-  include/linux/bits.h \
-  include/linux/const.h \
-  include/vdso/const.h \
-  include/uapi/linux/const.h \
-  include/vdso/bits.h \
-  include/linux/build_bug.h \
-  arch/arm/include/asm/bitops.h \
-  include/linux/irqflags.h \
-    $(wildcard include/config/trace/irqflags.h) \
-    $(wildcard include/config/irqsoff/tracer.h) \
-    $(wildcard include/config/preempt/tracer.h) \
-    $(wildcard include/config/trace/irqflags/support.h) \
-  include/linux/typecheck.h \
-  arch/arm/include/asm/irqflags.h \
-    $(wildcard include/config/cpu/v7m.h) \
-  arch/arm/include/asm/ptrace.h \
-    $(wildcard include/config/arm/thumb.h) \
-    $(wildcard include/config/thumb2/kernel.h) \
-  arch/arm/include/uapi/asm/ptrace.h \
-    $(wildcard include/config/cpu/endian/be8.h) \
-  arch/arm/include/asm/hwcap.h \
-  arch/arm/include/uapi/asm/hwcap.h \
-  include/asm-generic/irqflags.h \
-  arch/arm/include/asm/percpu.h \
-    $(wildcard include/config/cpu/v6.h) \
-  include/asm-generic/percpu.h \
-    $(wildcard include/config/debug/preempt.h) \
-    $(wildcard include/config/have/setup/per/cpu/area.h) \
-  include/linux/threads.h \
-    $(wildcard include/config/nr/cpus.h) \
-    $(wildcard include/config/base/small.h) \
-  include/linux/percpu-defs.h \
-    $(wildcard include/config/debug/force/weak/per/cpu.h) \
-    $(wildcard include/config/amd/mem/encrypt.h) \
-  arch/arm/include/asm/barrier.h \
-    $(wildcard include/config/cpu/32v6k.h) \
-    $(wildcard include/config/cpu/xsc3.h) \
-    $(wildcard include/config/cpu/fa526.h) \
-    $(wildcard include/config/arm/heavy/mb.h) \
-    $(wildcard include/config/arm/dma/mem/bufferable.h) \
-    $(wildcard include/config/cpu/spectre.h) \
-  include/asm-generic/barrier.h \
-  include/asm-generic/bitops/non-atomic.h \
-  include/asm-generic/bitops/builtin-__fls.h \
-  include/asm-generic/bitops/builtin-__ffs.h \
-  include/asm-generic/bitops/builtin-fls.h \
-  include/asm-generic/bitops/builtin-ffs.h \
-  include/asm-generic/bitops/ffz.h \
-  include/asm-generic/bitops/fls64.h \
-  include/asm-generic/bitops/sched.h \
-  include/asm-generic/bitops/hweight.h \
-  include/asm-generic/bitops/arch_hweight.h \
-  include/asm-generic/bitops/const_hweight.h \
-  include/asm-generic/bitops/lock.h \
-  include/linux/atomic.h \
-  arch/arm/include/asm/atomic.h \
-    $(wildcard include/config/generic/atomic64.h) \
-    $(wildcard include/config/arm/lpae.h) \
-  include/linux/prefetch.h \
-  arch/arm/include/asm/processor.h \
-    $(wildcard include/config/have/hw/breakpoint.h) \
-    $(wildcard include/config/binfmt/elf/fdpic.h) \
-  arch/arm/include/asm/hw_breakpoint.h \
-  arch/arm/include/asm/unified.h \
-  arch/arm/include/asm/vdso/processor.h \
-    $(wildcard include/config/arm/errata/754327.h) \
-  arch/arm/include/asm/cache.h \
-    $(wildcard include/config/arm/l1/cache/shift.h) \
-    $(wildcard include/config/aeabi.h) \
-  arch/arm/include/asm/cmpxchg.h \
-    $(wildcard include/config/cpu/sa1100.h) \
-    $(wildcard include/config/cpu/sa110.h) \
-  include/asm-generic/cmpxchg-local.h \
-  include/linux/atomic-fallback.h \
-  include/asm-generic/atomic-long.h \
-  include/asm-generic/bitops/find.h \
-    $(wildcard include/config/generic/find/first/bit.h) \
-  include/asm-generic/bitops/le.h \
-  arch/arm/include/uapi/asm/byteorder.h \
-  include/linux/byteorder/little_endian.h \
-  include/uapi/linux/byteorder/little_endian.h \
-  include/linux/swab.h \
-  include/uapi/linux/swab.h \
-  arch/arm/include/asm/swab.h \
-  arch/arm/include/uapi/asm/swab.h \
-  include/linux/byteorder/generic.h \
-  include/asm-generic/bitops/ext2-atomic-setbit.h \
-  include/linux/log2.h \
-    $(wildcard include/config/arch/has/ilog2/u32.h) \
-    $(wildcard include/config/arch/has/ilog2/u64.h) \
-  include/linux/minmax.h \
-  include/linux/printk.h \
-    $(wildcard include/config/message/loglevel/default.h) \
-    $(wildcard include/config/console/loglevel/default.h) \
-    $(wildcard include/config/console/loglevel/quiet.h) \
-    $(wildcard include/config/early/printk.h) \
-    $(wildcard include/config/printk/nmi.h) \
-    $(wildcard include/config/printk.h) \
-    $(wildcard include/config/dynamic/debug.h) \
-    $(wildcard include/config/dynamic/debug/core.h) \
-  include/linux/init.h \
-    $(wildcard include/config/strict/kernel/rwx.h) \
-    $(wildcard include/config/strict/module/rwx.h) \
-  include/linux/kern_levels.h \
-  include/linux/cache.h \
-    $(wildcard include/config/arch/has/cache/line/size.h) \
-  include/uapi/linux/kernel.h \
-  include/uapi/linux/sysinfo.h \
-  include/linux/ratelimit_types.h \
-  include/uapi/linux/param.h \
-  arch/arm/include/generated/uapi/asm/param.h \
-  include/asm-generic/param.h \
-    $(wildcard include/config/hz.h) \
-  include/uapi/asm-generic/param.h \
-  include/linux/spinlock_types.h \
-    $(wildcard include/config/debug/spinlock.h) \
-    $(wildcard include/config/debug/lock/alloc.h) \
-  arch/arm/include/asm/spinlock_types.h \
-  include/linux/lockdep_types.h \
-    $(wildcard include/config/prove/raw/lock/nesting.h) \
-    $(wildcard include/config/preempt/lock.h) \
-    $(wildcard include/config/lockdep.h) \
-    $(wildcard include/config/lock/stat.h) \
-  include/linux/rwlock_types.h \
-  arch/arm/include/asm/div64.h \
-  arch/arm/include/asm/compiler.h \
-  include/asm-generic/div64.h \
-  arch/arm/include/asm/delay.h \
-  arch/arm/include/asm/memory.h \
-    $(wildcard include/config/need/mach/memory/h.h) \
-    $(wildcard include/config/page/offset.h) \
-    $(wildcard include/config/highmem.h) \
-    $(wildcard include/config/dram/base.h) \
-    $(wildcard include/config/dram/size.h) \
-    $(wildcard include/config/xip/kernel.h) \
-    $(wildcard include/config/have/tcm.h) \
-    $(wildcard include/config/arm/patch/phys/virt.h) \
-    $(wildcard include/config/phys/offset.h) \
-    $(wildcard include/config/xip/phys/addr.h) \
-    $(wildcard include/config/debug/virtual.h) \
-  include/linux/sizes.h \
-  include/asm-generic/memory_model.h \
-    $(wildcard include/config/flatmem.h) \
-    $(wildcard include/config/discontigmem.h) \
-    $(wildcard include/config/sparsemem/vmemmap.h) \
-    $(wildcard include/config/sparsemem.h) \
-  include/linux/pfn.h \
-  include/linux/gpio.h \
-    $(wildcard include/config/gpiolib.h) \
-    $(wildcard include/config/arch/have/custom/gpio/h.h) \
-  include/linux/errno.h \
-  include/uapi/linux/errno.h \
-  arch/arm/include/generated/uapi/asm/errno.h \
-  include/uapi/asm-generic/errno.h \
-  include/uapi/asm-generic/errno-base.h \
-  arch/arm/include/asm/gpio.h \
-    $(wildcard include/config/arch/nr/gpio.h) \
-  include/asm-generic/gpio.h \
   include/linux/gpio/driver.h \
     $(wildcard include/config/irq/domain/hierarchy.h) \
     $(wildcard include/config/gpio/generic.h) \
     $(wildcard include/config/gpiolib/irqchip.h) \
     $(wildcard include/config/of/gpio.h) \
     $(wildcard include/config/of.h) \
+    $(wildcard include/config/lockdep.h) \
     $(wildcard include/config/pinctrl.h) \
   include/linux/device.h \
     $(wildcard include/config/debug/devres.h) \
+    $(wildcard include/config/prove/locking.h) \
     $(wildcard include/config/energy/model.h) \
     $(wildcard include/config/generic/msi/irq/domain.h) \
     $(wildcard include/config/generic/msi/irq.h) \
@@ -256,8 +85,34 @@ deps_/home/roboevt/dev/522/final/led-matrix-control.o := \
     $(wildcard include/config/devtmpfs.h) \
     $(wildcard include/config/sysfs/deprecated.h) \
   include/linux/dev_printk.h \
+    $(wildcard include/config/printk.h) \
+    $(wildcard include/config/dynamic/debug.h) \
+    $(wildcard include/config/dynamic/debug/core.h) \
   include/linux/ratelimit.h \
+  include/linux/ratelimit_types.h \
+  include/linux/bits.h \
+  include/linux/const.h \
+  include/vdso/const.h \
+  include/uapi/linux/const.h \
+  include/vdso/bits.h \
+  include/linux/build_bug.h \
+  include/uapi/linux/param.h \
+  arch/arm/include/generated/uapi/asm/param.h \
+  include/asm-generic/param.h \
+    $(wildcard include/config/hz.h) \
+  include/uapi/asm-generic/param.h \
+  include/linux/spinlock_types.h \
+    $(wildcard include/config/smp.h) \
+    $(wildcard include/config/debug/spinlock.h) \
+    $(wildcard include/config/debug/lock/alloc.h) \
+  arch/arm/include/asm/spinlock_types.h \
+  include/linux/lockdep_types.h \
+    $(wildcard include/config/prove/raw/lock/nesting.h) \
+    $(wildcard include/config/preempt/lock.h) \
+    $(wildcard include/config/lock/stat.h) \
+  include/linux/rwlock_types.h \
   include/linux/sched.h \
+    $(wildcard include/config/debug/atomic/sleep.h) \
     $(wildcard include/config/virt/cpu/accounting/native.h) \
     $(wildcard include/config/sched/info.h) \
     $(wildcard include/config/schedstats.h) \
@@ -291,6 +146,7 @@ deps_/home/roboevt/dev/522/final/led-matrix-control.o := \
     $(wildcard include/config/audit.h) \
     $(wildcard include/config/auditsyscall.h) \
     $(wildcard include/config/debug/mutexes.h) \
+    $(wildcard include/config/trace/irqflags.h) \
     $(wildcard include/config/ubsan.h) \
     $(wildcard include/config/ubsan/trap.h) \
     $(wildcard include/config/block.h) \
@@ -301,6 +157,7 @@ deps_/home/roboevt/dev/522/final/led-matrix-control.o := \
     $(wildcard include/config/futex.h) \
     $(wildcard include/config/compat.h) \
     $(wildcard include/config/perf/events.h) \
+    $(wildcard include/config/debug/preempt.h) \
     $(wildcard include/config/numa/balancing.h) \
     $(wildcard include/config/rseq.h) \
     $(wildcard include/config/task/delay/acct.h) \
@@ -308,9 +165,11 @@ deps_/home/roboevt/dev/522/final/led-matrix-control.o := \
     $(wildcard include/config/latencytop.h) \
     $(wildcard include/config/kunit.h) \
     $(wildcard include/config/function/graph/tracer.h) \
+    $(wildcard include/config/tracing.h) \
     $(wildcard include/config/kcov.h) \
     $(wildcard include/config/uprobes.h) \
     $(wildcard include/config/bcache.h) \
+    $(wildcard include/config/mmu.h) \
     $(wildcard include/config/vmap/stack.h) \
     $(wildcard include/config/livepatch.h) \
     $(wildcard include/config/security.h) \
@@ -329,14 +188,134 @@ deps_/home/roboevt/dev/522/final/led-matrix-control.o := \
     $(wildcard include/config/generic/bug.h) \
     $(wildcard include/config/bug/on/data/corruption.h) \
   arch/arm/include/asm/bug.h \
+    $(wildcard include/config/thumb2/kernel.h) \
     $(wildcard include/config/debug/bugverbose.h) \
+    $(wildcard include/config/arm/lpae.h) \
+  include/linux/linkage.h \
+    $(wildcard include/config/arch/use/sym/annotations.h) \
+  include/linux/stringify.h \
+  include/linux/export.h \
+    $(wildcard include/config/modversions.h) \
+    $(wildcard include/config/module/rel/crcs.h) \
+    $(wildcard include/config/have/arch/prel32/relocations.h) \
+    $(wildcard include/config/modules.h) \
+    $(wildcard include/config/trim/unused/ksyms.h) \
+    $(wildcard include/config/unused/symbols.h) \
+  arch/arm/include/asm/linkage.h \
   arch/arm/include/asm/opcodes.h \
+    $(wildcard include/config/cpu/endian/be8.h) \
     $(wildcard include/config/cpu/endian/be32.h) \
+  include/linux/swab.h \
+  include/uapi/linux/swab.h \
+  arch/arm/include/asm/swab.h \
+  arch/arm/include/uapi/asm/swab.h \
   include/asm-generic/bug.h \
     $(wildcard include/config/bug.h) \
     $(wildcard include/config/generic/bug/relative/pointers.h) \
   include/linux/instrumentation.h \
     $(wildcard include/config/debug/entry.h) \
+  include/linux/kernel.h \
+    $(wildcard include/config/preempt/voluntary.h) \
+    $(wildcard include/config/preempt/rt.h) \
+    $(wildcard include/config/panic/timeout.h) \
+    $(wildcard include/config/ftrace/mcount/record.h) \
+  include/linux/limits.h \
+  include/uapi/linux/limits.h \
+  include/vdso/limits.h \
+  include/linux/bitops.h \
+  arch/arm/include/asm/bitops.h \
+  include/linux/irqflags.h \
+    $(wildcard include/config/irqsoff/tracer.h) \
+    $(wildcard include/config/preempt/tracer.h) \
+    $(wildcard include/config/trace/irqflags/support.h) \
+  include/linux/typecheck.h \
+  arch/arm/include/asm/irqflags.h \
+    $(wildcard include/config/cpu/v7m.h) \
+  arch/arm/include/asm/ptrace.h \
+    $(wildcard include/config/arm/thumb.h) \
+  arch/arm/include/uapi/asm/ptrace.h \
+  arch/arm/include/asm/hwcap.h \
+  arch/arm/include/uapi/asm/hwcap.h \
+  include/asm-generic/irqflags.h \
+  arch/arm/include/asm/percpu.h \
+    $(wildcard include/config/cpu/v6.h) \
+  include/asm-generic/percpu.h \
+    $(wildcard include/config/have/setup/per/cpu/area.h) \
+  include/linux/threads.h \
+    $(wildcard include/config/nr/cpus.h) \
+    $(wildcard include/config/base/small.h) \
+  include/linux/percpu-defs.h \
+    $(wildcard include/config/debug/force/weak/per/cpu.h) \
+    $(wildcard include/config/amd/mem/encrypt.h) \
+  arch/arm/include/asm/barrier.h \
+    $(wildcard include/config/cpu/32v6k.h) \
+    $(wildcard include/config/cpu/xsc3.h) \
+    $(wildcard include/config/cpu/fa526.h) \
+    $(wildcard include/config/arm/heavy/mb.h) \
+    $(wildcard include/config/arm/dma/mem/bufferable.h) \
+    $(wildcard include/config/cpu/spectre.h) \
+  include/asm-generic/barrier.h \
+  include/asm-generic/bitops/non-atomic.h \
+  include/asm-generic/bitops/builtin-__fls.h \
+  include/asm-generic/bitops/builtin-__ffs.h \
+  include/asm-generic/bitops/builtin-fls.h \
+  include/asm-generic/bitops/builtin-ffs.h \
+  include/asm-generic/bitops/ffz.h \
+  include/asm-generic/bitops/fls64.h \
+  include/asm-generic/bitops/sched.h \
+  include/asm-generic/bitops/hweight.h \
+  include/asm-generic/bitops/arch_hweight.h \
+  include/asm-generic/bitops/const_hweight.h \
+  include/asm-generic/bitops/lock.h \
+  include/linux/atomic.h \
+  arch/arm/include/asm/atomic.h \
+    $(wildcard include/config/generic/atomic64.h) \
+  include/linux/prefetch.h \
+  arch/arm/include/asm/processor.h \
+    $(wildcard include/config/have/hw/breakpoint.h) \
+    $(wildcard include/config/binfmt/elf/fdpic.h) \
+  arch/arm/include/asm/hw_breakpoint.h \
+  arch/arm/include/asm/unified.h \
+  arch/arm/include/asm/vdso/processor.h \
+    $(wildcard include/config/arm/errata/754327.h) \
+  arch/arm/include/asm/cache.h \
+    $(wildcard include/config/arm/l1/cache/shift.h) \
+    $(wildcard include/config/aeabi.h) \
+  arch/arm/include/asm/cmpxchg.h \
+    $(wildcard include/config/cpu/sa1100.h) \
+    $(wildcard include/config/cpu/sa110.h) \
+  include/asm-generic/cmpxchg-local.h \
+  include/linux/atomic-fallback.h \
+  include/asm-generic/atomic-long.h \
+  include/asm-generic/bitops/find.h \
+    $(wildcard include/config/generic/find/first/bit.h) \
+  include/asm-generic/bitops/le.h \
+  arch/arm/include/uapi/asm/byteorder.h \
+  include/linux/byteorder/little_endian.h \
+  include/uapi/linux/byteorder/little_endian.h \
+  include/linux/byteorder/generic.h \
+  include/asm-generic/bitops/ext2-atomic-setbit.h \
+  include/linux/log2.h \
+    $(wildcard include/config/arch/has/ilog2/u32.h) \
+    $(wildcard include/config/arch/has/ilog2/u64.h) \
+  include/linux/minmax.h \
+  include/linux/printk.h \
+    $(wildcard include/config/message/loglevel/default.h) \
+    $(wildcard include/config/console/loglevel/default.h) \
+    $(wildcard include/config/console/loglevel/quiet.h) \
+    $(wildcard include/config/early/printk.h) \
+    $(wildcard include/config/printk/nmi.h) \
+  include/linux/init.h \
+    $(wildcard include/config/strict/kernel/rwx.h) \
+    $(wildcard include/config/strict/module/rwx.h) \
+  include/linux/kern_levels.h \
+  include/linux/cache.h \
+    $(wildcard include/config/arch/has/cache/line/size.h) \
+  include/uapi/linux/kernel.h \
+  include/uapi/linux/sysinfo.h \
+  arch/arm/include/asm/div64.h \
+  arch/arm/include/asm/compiler.h \
+  include/asm-generic/div64.h \
   include/linux/restart_block.h \
   include/linux/time64.h \
   include/linux/math64.h \
@@ -363,6 +342,25 @@ deps_/home/roboevt/dev/522/final/led-matrix-control.o := \
     $(wildcard include/config/have/arch/pfn/valid.h) \
   arch/arm/include/asm/glue.h \
   arch/arm/include/asm/pgtable-3level-types.h \
+  arch/arm/include/asm/memory.h \
+    $(wildcard include/config/need/mach/memory/h.h) \
+    $(wildcard include/config/page/offset.h) \
+    $(wildcard include/config/highmem.h) \
+    $(wildcard include/config/dram/base.h) \
+    $(wildcard include/config/dram/size.h) \
+    $(wildcard include/config/xip/kernel.h) \
+    $(wildcard include/config/have/tcm.h) \
+    $(wildcard include/config/arm/patch/phys/virt.h) \
+    $(wildcard include/config/phys/offset.h) \
+    $(wildcard include/config/xip/phys/addr.h) \
+    $(wildcard include/config/debug/virtual.h) \
+  include/linux/sizes.h \
+  include/asm-generic/memory_model.h \
+    $(wildcard include/config/flatmem.h) \
+    $(wildcard include/config/discontigmem.h) \
+    $(wildcard include/config/sparsemem/vmemmap.h) \
+    $(wildcard include/config/sparsemem.h) \
+  include/linux/pfn.h \
   include/asm-generic/getorder.h \
   include/linux/pid.h \
   include/linux/rculist.h \
@@ -931,8 +929,9 @@ deps_/home/roboevt/dev/522/final/led-matrix-control.o := \
     $(wildcard include/config/have/mod/arch/specific.h) \
     $(wildcard include/config/modules/use/elf/rel.h) \
     $(wildcard include/config/modules/use/elf/rela.h) \
-  include/linux/kthread.h \
+  /home/roboevt/dev/522/final/matrix.h \
+  /home/roboevt/dev/522/final/timer.h \
 
-/home/roboevt/dev/522/final/led-matrix-control.o: $(deps_/home/roboevt/dev/522/final/led-matrix-control.o)
+/home/roboevt/dev/522/final/led-matrix-module.o: $(deps_/home/roboevt/dev/522/final/led-matrix-module.o)
 
-$(deps_/home/roboevt/dev/522/final/led-matrix-control.o):
+$(deps_/home/roboevt/dev/522/final/led-matrix-module.o):

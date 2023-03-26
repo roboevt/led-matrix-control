@@ -1,0 +1,1 @@
+cmd_/home/roboevt/dev/522/final/led-matrix.o := arm-linux-gnueabihf-ld  -EL    -r -o /home/roboevt/dev/522/final/led-matrix.o /home/roboevt/dev/522/final/led-matrix-module.o /home/roboevt/dev/522/final/matrix.o /home/roboevt/dev/522/final/timer.o
