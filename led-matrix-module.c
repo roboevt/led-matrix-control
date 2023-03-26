@@ -169,7 +169,7 @@ static int __init led_module_init(void) {
     return retval;
   }
   matrix_display_clear();
-  matrix_set_row(1, 1);
+  matrix_set_character('A');
 
   timer_init();
 

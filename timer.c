@@ -24,14 +24,27 @@ static enum hrtimer_restart restart_timer(struct hrtimer *timer) {
 
 static int threadFunction(void *data) {
   int currentCol = 0;
+  int frames = 0;
+  char currentChar = 'A';
   printk(KERN_INFO "threadFunction starting with data %p\n", data);
   while (1) {
     currentCol++;
     if (currentCol <= COLS) {
       matrix_display_col(currentCol - 1);
     } else {
-      currentCol = 1;
       matrix_display_col(0);
+      currentCol = 1;
+      frames++;
+    }
+    if(frames % 100 == 0) {  // 1hz
+      frames++;
+      if(currentChar == 'L') {
+        currentChar = 'A';
+      } else {
+        matrix_set_character(currentChar);
+        printk(KERN_INFO "Displaying character %c\n", currentChar);
+        currentChar++;
+      }
     }
     set_current_state(TASK_INTERRUPTIBLE);
     schedule();
