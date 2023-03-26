@@ -14,7 +14,7 @@ static struct hrtimer timer;
 struct task_struct *kernelThread = NULL;
 
 static __s64 seconds = 0;
-static unsigned long nanoseconds = 1000000;  // 167 hz total screen refresh rate
+static unsigned long nanoseconds = 2000000;  // 100 hz total screen refresh rate
 
 static enum hrtimer_restart restart_timer(struct hrtimer *timer) {
   wake_up_process(kernelThread);
@@ -30,7 +30,8 @@ static int threadFunction(void *data) {
     if (currentCol <= COLS) {
       matrix_display_col(currentCol - 1);
     } else {
-      currentCol = 0;
+      currentCol = 1;
+      matrix_display_col(0);
     }
     set_current_state(TASK_INTERRUPTIBLE);
     schedule();

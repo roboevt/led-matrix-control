@@ -12,6 +12,7 @@
 
 static int row = 1;
 static int col = 1;
+static char character = 'A';
 static int sec = 0;
 static int nsec = 500000000;
 
@@ -49,6 +50,19 @@ static ssize_t col_store(struct kobject *kobj, struct kobj_attribute *attr,
   return count;
 }
 
+static ssize_t character_show(struct kobject *kobj, struct kobj_attribute *attr,
+                              char *buf) {
+  return sprintf(buf, "%c\n", character);
+}
+
+static ssize_t character_store(struct kobject *kobj,
+                               struct kobj_attribute *attr, const char *buf,
+                               size_t count) {
+  character = buf[0];
+  matrix_set_character(character);
+  return count;
+}
+
 static ssize_t sec_show(struct kobject *kobj, struct kobj_attribute *attr,
                         char *buf) {
   return sprintf(buf, "%d\n", sec);
@@ -80,6 +94,9 @@ static struct kobj_attribute row_attribute =
 
 static struct kobj_attribute col_attribute =
     __ATTR(col, 0664, col_show, col_store);
+
+static struct kobj_attribute character_attribute =
+    __ATTR(character, 0664, character_show, character_store);
 
 static struct kobj_attribute sec_attribute =
     __ATTR(sec, 0664, sec_show, sec_store);
@@ -122,8 +139,8 @@ static struct kobj_attribute bar_attribute = __ATTR(bar, 0664, b_show, b_store);
 
 static struct attribute *attrs[] = {
     // &foo_attribute.attr, &baz_attribute.attr, &bar_attribute.attr,
-    &row_attribute.attr, &col_attribute.attr, &sec_attribute.attr,
-    &nsec_attribute.attr, NULL};
+    &row_attribute.attr,       &col_attribute.attr,  &sec_attribute.attr,
+    &character_attribute.attr, &nsec_attribute.attr, NULL};
 
 static struct attribute_group attr_group = {
     .attrs = attrs,

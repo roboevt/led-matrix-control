@@ -1,1 +1,0 @@
-cmd_/home/roboevt/dev/522/final/led-matrix.ko := arm-linux-gnueabihf-ld -r  -EL  --build-id=sha1  -T scripts/module.lds -o /home/roboevt/dev/522/final/led-matrix.ko /home/roboevt/dev/522/final/led-matrix.o /home/roboevt/dev/522/final/led-matrix.mod.o;  true

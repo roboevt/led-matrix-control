@@ -1,1 +1,0 @@
-cmd_/home/roboevt/dev/522/final/Module.symvers := sed 's/ko$$/o/' /home/roboevt/dev/522/final/modules.order | scripts/mod/modpost -m -a   -o /home/roboevt/dev/522/final/Module.symvers -e -i Module.symvers   -T -

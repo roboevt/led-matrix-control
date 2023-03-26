@@ -5,6 +5,8 @@
 #include <linux/kobject.h>
 #include <linux/module.h>
 
+#include "characters.h"
+
 #define COL_ONE 5
 #define COL_TWO 6
 #define COL_THREE 16
@@ -124,6 +126,61 @@ void matrix_set_col(int col, int val) {
   }
 }
 
+void matrix_set_pixel(int row, int col, int val) {
+  if (matrix_check_row(row)) return;
+  if (matrix_check_col(col)) return;
+  matrix[row][col] = val;
+}
+
+static void matrix_set_character_helper(char character_map[ROWS][COLS]) {
+  for (int i = 0; i < ROWS; i++) {
+    for (int j = 0; j < COLS; j++) {
+      matrix[i][j] = character_map[i][j];
+    }
+  }
+}
+
+void matrix_set_character(char c) {
+  switch (c) {
+    case 'A':
+      matrix_set_character_helper(char_A);
+      break;
+    case 'B':
+      matrix_set_character_helper(char_B);
+      break;
+    case 'C':
+      matrix_set_character_helper(char_C);
+      break;
+    case 'D':
+      matrix_set_character_helper(char_D);
+      break;
+    case 'E':
+      matrix_set_character_helper(char_E);
+      break;
+    case 'F':
+      matrix_set_character_helper(char_F);
+      break;
+    case 'G':
+      matrix_set_character_helper(char_G);
+      break;
+    case 'H':
+      matrix_set_character_helper(char_H);
+      break;
+    case 'I':
+      matrix_set_character_helper(char_I);
+      break;
+    case 'J':
+      matrix_set_character_helper(char_J);
+      break;
+    case 'K':
+      matrix_set_character_helper(char_K);
+      break;
+    case 'L':
+      matrix_set_character_helper(char_L);
+      break;
+  }
+}
+
 // turns off all GPIO pins
 void matrix_display_clear(void) {
   for (int i = 0; i < COLS; i++) {
@@ -153,4 +210,3 @@ void matrix_display_col(int col) {
     gpio_set_value(cols[i], i == col ? 0 : 1);
   }
 }
-
