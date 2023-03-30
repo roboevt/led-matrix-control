@@ -13,8 +13,7 @@
 static int row = 1;
 static int col = 1;
 static char character = 'A';
-static int sec = 0;
-static int nsec = 500000000;
+static int fps = 1;
 
 static ssize_t row_show(struct kobject *kobj, struct kobj_attribute *attr,
                         char *buf) {
@@ -63,29 +62,25 @@ static ssize_t character_store(struct kobject *kobj,
   return count;
 }
 
-static ssize_t sec_show(struct kobject *kobj, struct kobj_attribute *attr,
+static ssize_t fps_show(struct kobject *kobj, struct kobj_attribute *attr,
                         char *buf) {
-  return sprintf(buf, "%d\n", sec);
+  return sprintf(buf, "%d\n", fps);
 }
 
-static ssize_t sec_store(struct kobject *kobj, struct kobj_attribute *attr,
+static ssize_t fps_store(struct kobject *kobj, struct kobj_attribute *attr,
                          const char *buf, size_t count) {
-  int ret = kstrtoint(buf, 10, &sec);
+  int sec = 0;
+  int nsec = 0;
+  int ret = kstrtoint(buf, 10, &fps);
   if (ret < 0) return ret;
-  timer_set_interval(sec, nsec);
-  return count;
-}
-
-static ssize_t nsec_show(struct kobject *kobj, struct kobj_attribute *attr,
-                         char *buf) {
-  return sprintf(buf, "%d\n", nsec);
-}
-
-static ssize_t nsec_store(struct kobject *kobj, struct kobj_attribute *attr,
-                          const char *buf, size_t count) {
-  int ret = kstrtoint(buf, 10, &nsec);
-  if (ret < 0) return ret;
-  timer_set_interval(sec, nsec);
+  if (fps) {
+    nsec = 1000000000 / fps;
+    sec = 0;
+  } else {  // setting to 0 fps
+    sec = __INT_MAX__;  // 63 years
+    nsec = __INT_MAX__; // 2 seconds
+  }
+  timer_set_frame_interval(sec, nsec);
   return count;
 }
 
@@ -98,11 +93,8 @@ static struct kobj_attribute col_attribute =
 static struct kobj_attribute character_attribute =
     __ATTR(character, 0664, character_show, character_store);
 
-static struct kobj_attribute sec_attribute =
-    __ATTR(sec, 0664, sec_show, sec_store);
-
-static struct kobj_attribute nsec_attribute =
-    __ATTR(nsec, 0664, nsec_show, nsec_store);
+static struct kobj_attribute fps_attribute =
+    __ATTR(fps, 0664, fps_show, fps_store);
 
 /*
  * More complex function where we determine which variable is being accessed by
@@ -139,8 +131,8 @@ static struct kobj_attribute bar_attribute = __ATTR(bar, 0664, b_show, b_store);
 
 static struct attribute *attrs[] = {
     // &foo_attribute.attr, &baz_attribute.attr, &bar_attribute.attr,
-    &row_attribute.attr,       &col_attribute.attr,  &sec_attribute.attr,
-    &character_attribute.attr, &nsec_attribute.attr, NULL};
+    &row_attribute.attr, &col_attribute.attr, &character_attribute.attr,
+    &fps_attribute.attr, NULL};
 
 static struct attribute_group attr_group = {
     .attrs = attrs,

@@ -132,52 +132,12 @@ void matrix_set_pixel(int row, int col, int val) {
   matrix[row][col] = val;
 }
 
-static void matrix_set_character_helper(char character_map[ROWS][COLS]) {
+void matrix_set_character(char c) {
+  const char (*character_map)[ROWS][COLS] = character_get_array(c);
   for (int i = 0; i < ROWS; i++) {
     for (int j = 0; j < COLS; j++) {
-      matrix[i][j] = character_map[i][j];
+      matrix[i][j] = (*character_map)[i][j];
     }
-  }
-}
-
-void matrix_set_character(char c) {
-  switch (c) {
-    case 'A':
-      matrix_set_character_helper(char_A);
-      break;
-    case 'B':
-      matrix_set_character_helper(char_B);
-      break;
-    case 'C':
-      matrix_set_character_helper(char_C);
-      break;
-    case 'D':
-      matrix_set_character_helper(char_D);
-      break;
-    case 'E':
-      matrix_set_character_helper(char_E);
-      break;
-    case 'F':
-      matrix_set_character_helper(char_F);
-      break;
-    case 'G':
-      matrix_set_character_helper(char_G);
-      break;
-    case 'H':
-      matrix_set_character_helper(char_H);
-      break;
-    case 'I':
-      matrix_set_character_helper(char_I);
-      break;
-    case 'J':
-      matrix_set_character_helper(char_J);
-      break;
-    case 'K':
-      matrix_set_character_helper(char_K);
-      break;
-    case 'L':
-      matrix_set_character_helper(char_L);
-      break;
   }
 }
 
