@@ -4,6 +4,7 @@
 #include <linux/kernel.h>
 #include <linux/kobject.h>
 #include <linux/module.h>
+#include <linux/string.h>
 
 #include "characters.h"
 
@@ -25,7 +26,7 @@ static int cols[] = {COL_ONE, COL_TWO, COL_THREE, COL_FOUR, COL_FIVE};
 static int rows[] = {ROW_ONE,  ROW_TWO, ROW_THREE, ROW_FOUR,
                      ROW_FIVE, ROW_SIX, ROW_SEVEN};
 
-static char matrix[ROWS][COLS] = {
+static char matrix_buffer[ROWS][COLS] = {
     {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}};
 
@@ -78,15 +79,6 @@ int matrix_free(void) {
   return 0;
 }
 
-// char (*matrix_get(void))[COLS] { return matrix; }
-// static int check_row_valid(int row) {
-//   if (row < 0 || row >= ROWS) {
-//     printk(KERN_INFO "Invalid row: %d\n", row);
-//     return -1;
-//   }
-//   return 0;
-// }
-
 int matrix_check_col(int col) {
   if (col < 0 || col >= COLS) {
     printk(KERN_INFO "Invalid col: %d\n", col);
@@ -107,7 +99,7 @@ int matrix_check_row(int row) {
 void matrix_set_clear(void) {
   for (int i = 0; i < ROWS; i++) {
     for (int j = 0; j < COLS; j++) {
-      matrix[i][j] = 0;
+      matrix_buffer[i][j] = 0;
     }
   }
 }
@@ -115,30 +107,26 @@ void matrix_set_clear(void) {
 void matrix_set_row(int row, int val) {
   if (matrix_check_row(row)) return;
   for (int i = 0; i < COLS; i++) {
-    matrix[row][i] = val;
+    matrix_buffer[row][i] = val;
   }
 }
 
 void matrix_set_col(int col, int val) {
   if (matrix_check_col(col)) return;
   for (int i = 0; i < ROWS; i++) {
-    matrix[i][col] = val;
+    matrix_buffer[i][col] = val;
   }
 }
 
 void matrix_set_pixel(int row, int col, int val) {
   if (matrix_check_row(row)) return;
   if (matrix_check_col(col)) return;
-  matrix[row][col] = val;
+  matrix_buffer[row][col] = val;
 }
 
 void matrix_set_character(char c) {
   const char (*character_map)[ROWS][COLS] = character_get_array(c);
-  for (int i = 0; i < ROWS; i++) {
-    for (int j = 0; j < COLS; j++) {
-      matrix[i][j] = (*character_map)[i][j];
-    }
-  }
+  memcpy(matrix_buffer, *character_map, sizeof(matrix_buffer));
 }
 
 // turns off all GPIO pins
@@ -154,7 +142,7 @@ void matrix_display_clear(void) {
 void matrix_display_row(int row) {
   if (matrix_check_row(row)) return;
   for (int i = 0; i < COLS; i++) {
-    gpio_set_value(cols[i], matrix[row][i]);
+    gpio_set_value(cols[i], matrix_buffer[row][i]);
   }
   for (int i = 0; i < ROWS; i++) {
     gpio_set_value(rows[i], i == row ? 0 : 1);
@@ -164,7 +152,7 @@ void matrix_display_row(int row) {
 void matrix_display_col(int col) {
   if (matrix_check_col(col)) return;
   for (int i = 0; i < ROWS; i++) {
-    gpio_set_value(rows[i], matrix[i][col]);
+    gpio_set_value(rows[i], matrix_buffer[i][col]);
   }
   for (int i = 0; i < COLS; i++) {
     gpio_set_value(cols[i], i == col ? 0 : 1);

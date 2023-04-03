@@ -3,7 +3,6 @@
 
 int matrix_init(void);
 int matrix_free(void);
-// char (*matrix_get(void))[COLS];
 
 int matrix_check_col(int col);
 int matrix_check_row(int row);

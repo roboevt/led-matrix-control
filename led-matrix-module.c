@@ -96,39 +96,6 @@ static struct kobj_attribute character_attribute =
 static struct kobj_attribute fps_attribute =
     __ATTR(fps, 0664, fps_show, fps_store);
 
-/*
- * More complex function where we determine which variable is being accessed by
- * looking at the attribute for the "baz" and "bar" files.
-
-static ssize_t b_show(struct kobject *kobj, struct kobj_attribute *attr,
-                      char *buf) {
-  int var;
-
-  if (strcmp(attr->attr.name, "baz") == 0)
-    var = baz;
-  else
-    var = bar;
-  return sprintf(buf, "%d\n", var);
-}
-
-static ssize_t b_store(struct kobject *kobj, struct kobj_attribute *attr,
-                       const char *buf, size_t count) {
-  int var, ret;
-
-  ret = kstrtoint(buf, 10, &var);
-  if (ret < 0) return ret;
-
-  if (strcmp(attr->attr.name, "baz") == 0)
-    baz = var;
-  else
-    bar = var;
-  return count;
-}
-
-static struct kobj_attribute baz_attribute = __ATTR(baz, 0664, b_show, b_store);
-static struct kobj_attribute bar_attribute = __ATTR(bar, 0664, b_show, b_store);
-*/
-
 static struct attribute *attrs[] = {
     // &foo_attribute.attr, &baz_attribute.attr, &bar_attribute.attr,
     &row_attribute.attr, &col_attribute.attr, &character_attribute.attr,
