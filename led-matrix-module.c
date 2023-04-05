@@ -97,7 +97,6 @@ static struct kobj_attribute fps_attribute =
     __ATTR(fps, 0664, fps_show, fps_store);
 
 static struct attribute *attrs[] = {
-    // &foo_attribute.attr, &baz_attribute.attr, &bar_attribute.attr,
     &row_attribute.attr, &col_attribute.attr, &character_attribute.attr,
     &fps_attribute.attr, NULL};
 

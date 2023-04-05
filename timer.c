@@ -77,7 +77,7 @@ int timer_init(void) {
 
   scanlineThread = kthread_run(updateScanLine, NULL, "updateScanLine");
   frameThread = kthread_run(updateFrame, NULL, "updateFrame");
-  if (!scanlineThread || !frameThread) {
+  if (scanlineThread == ERR_PTR || frameThread == ERR_PTR) {
     printk(KERN_ALERT "Thread failed to create!\n");
     return EINTR;
   }
