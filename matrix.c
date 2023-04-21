@@ -30,6 +30,10 @@ static char matrix_buffer[ROWS][COLS] = {
     {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}};
 
+static char** string_buffer = NULL;
+static int string_buffer_location = 0;
+static int string_buffer_length = 0;
+
 int matrix_init(void) {
   for (int i = 0; i < COLS; i++) {
     if (!gpio_is_valid(cols[i])) {
@@ -67,6 +71,16 @@ int matrix_init(void) {
   return 0;
 }
 
+void free_string_buffer(void) {
+  if (string_buffer != NULL) {
+    for (int i = 0; i < ROWS; i++) {
+      kfree(string_buffer[i]);
+    }
+    kfree(string_buffer);
+    string_buffer = NULL;
+  }
+}
+
 int matrix_free(void) {
   matrix_display_clear();
   for (int i = 0; i < COLS; i++) {
@@ -75,6 +89,7 @@ int matrix_free(void) {
   for (int i = 0; i < ROWS; i++) {
     gpio_free(rows[i]);
   }
+  free_string_buffer();
   printk(KERN_INFO "GPIO cleaned up\n");
   return 0;
 }
@@ -125,8 +140,53 @@ void matrix_set_pixel(int row, int col, int val) {
 }
 
 void matrix_set_character(char c) {
-  const char (*character_map)[ROWS][COLS] = character_get_array(c);
+  const char(*character_map)[ROWS][COLS] = character_get_array(c);
   memcpy(matrix_buffer, *character_map, sizeof(matrix_buffer));
+}
+
+void matrix_set_string(const char* str) {
+  // copy the string so we can modify it
+  char* str_copy = kmalloc(strlen(str) + 1, GFP_KERNEL);
+  strcpy(str_copy, str);
+  // remove any newlines
+  str_copy[strcspn(str_copy, "\r\n")] = 0;
+  
+  matrix_set_clear();
+  free_string_buffer();
+
+  // allocate memory for a buffer to hold the character maps of the entire
+  // string. Stored as an array of rows that each hold an entire column of the
+  // characters of str.
+  string_buffer = kmalloc(ROWS * sizeof(char*), GFP_KERNEL);
+
+  // we need space for each character and a space between them
+  string_buffer_length = strlen(str_copy) * (COLS + 1);
+
+  for (int row = 0; row < ROWS; row++) {
+    string_buffer[row] = kmalloc(string_buffer_length + COLS, GFP_KERNEL);
+    memset(string_buffer[row], 0, string_buffer_length + COLS);
+  }
+
+  // copy each character of str into the string buffer
+  for (int i = 0; i < strlen(str_copy); i++) {
+    const char(*character_map)[ROWS][COLS] = character_get_array(str_copy[i]);
+    for (int row = 0; row < ROWS; row++) {
+      for (int col = 0; col < COLS; col++) {
+        // copy the character map into the string buffer, and leave 1 space
+        // between characters
+        string_buffer[row][i * (COLS + 1) + col] = (*character_map)[row][col];
+      }
+    }
+  }
+
+  // restart at the beggining
+  string_buffer_location = 0;
+
+  kfree(str_copy);
+}
+
+const char (*matrix_get_pixels(void))[ROWS][COLS] {
+  return (const char(*)[ROWS][COLS])matrix_buffer;
 }
 
 // turns off all GPIO pins
@@ -157,4 +217,17 @@ void matrix_display_col(int col) {
   for (int i = 0; i < COLS; i++) {
     gpio_set_value(cols[i], i == col ? 0 : 1);
   }
+}
+
+void matrix_display_scroll(void) {
+  if (string_buffer == NULL) return;
+  if (string_buffer_location >= string_buffer_length)
+    string_buffer_location = 0;
+  for (int row = 0; row < ROWS; row++) {
+    for (int col = 0; col < COLS; col++) {
+      matrix_buffer[row][col] =
+          string_buffer[row][string_buffer_location + col];
+    }
+  }
+  string_buffer_location++;
 }

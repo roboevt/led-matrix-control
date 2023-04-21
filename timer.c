@@ -53,15 +53,16 @@ static int updateScanLine(void *data) {
 }
 
 static int updateFrame(void *data) {
-  char currentChar = '0';
+  //char currentChar = '0';
   while (1) {
-    currentChar++;
-    if (currentChar <= 'z') {
-      matrix_set_character(currentChar);
-    } else {
-      currentChar = '0' - 1;
-      matrix_set_character('0');
-    }
+    // currentChar++;
+    // if (currentChar <= 'z') {
+    //   matrix_set_character(currentChar);
+    // } else {
+    //   currentChar = '0' - 1;
+    //   matrix_set_character('0');
+    // }
+    matrix_display_scroll();
     set_current_state(TASK_INTERRUPTIBLE);
     schedule();
     if (kthread_should_stop()) {
@@ -77,7 +78,7 @@ int timer_init(void) {
 
   scanlineThread = kthread_run(updateScanLine, NULL, "updateScanLine");
   frameThread = kthread_run(updateFrame, NULL, "updateFrame");
-  if (scanlineThread == ERR_PTR || frameThread == ERR_PTR) {
+  if ((void*)scanlineThread == ERR_PTR || (void*)frameThread == ERR_PTR) {
     printk(KERN_ALERT "Thread failed to create!\n");
     return EINTR;
   }

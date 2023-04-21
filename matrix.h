@@ -22,9 +22,16 @@ void matrix_set_pixel(int row, int col, int val);
 // set the framebuffer to a representation of a character
 void matrix_set_character(char c);
 
+void matrix_set_string(const char *str);
+
+// get the current framebuffer
+const char (*matrix_get_pixels(void))[ROWS][COLS];
+
 // turn off all GPIO pins
 void matrix_display_clear(void);
 // display one row of the framebuffer to the matrix
 void matrix_display_row(int row);
 // display one column of the framebuffer to the matrix
 void matrix_display_col(int col);
+
+void matrix_display_scroll(void);

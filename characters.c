@@ -1,5 +1,17 @@
 #include "characters.h"
 
+#include <linux/module.h>
+
+static const char char_space[ROWS][COLS] = {
+    {0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0}
+};
+
 static const char char_0[ROWS][COLS] = {
     {0, 1, 1, 1, 0},
     {1, 0, 0, 0, 1},
@@ -688,7 +700,10 @@ static const char char_unknown[ROWS][COLS] = {
 
 const char (*character_get_array(char character))[ROWS][COLS] {
     // c switch statements are just jump tables, but char is just a number so it still works
+    printk(KERN_INFO "character_get_array(%c)\n", character);
     switch (character) {
+        case ' ':
+        return &char_space;
         case '0':
         return &char_0;
         case '1':
