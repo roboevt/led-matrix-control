@@ -1,215 +1,25 @@
-#include <linux/ctype.h>
-#include <linux/gpio.h>
-#include <linux/init.h>
-#include <linux/kobject.h>
-#include <linux/module.h>
-#include <linux/string.h>
-#include <linux/sysfs.h>
-#include <linux/types.h>
-#include <stdbool.h>
-#include <stddef.h>
-
 #include "matrix.h"
 #include "timer.h"
+#include "led-matrix-module.h"
 
-static char character = 'A';
-static int fps = 1;
-static char *string = NULL;
+// Link getters and setters to the kernel attributes
 
 // Indicates which rows are completly lit
-static ssize_t rows_show(struct kobject *kobj, struct kobj_attribute *attr,
-                         char *buf) {
-  const char(*current_framebuffer)[ROWS][COLS] = matrix_get_pixels();
-  char *originalStart = buf;
-  int ret;
-  for (int row = 0; row < ROWS; row++) {
-    bool entireRowLit = true;
-    for (int col = 0; col < COLS; col++) {
-      if (!(*current_framebuffer)[row][col]) {
-        entireRowLit = false;
-        break;
-      }
-    }
-    if (entireRowLit) {
-      ret = sprintf(buf, "%d ", row + 1);
-      if (ret < 0) return ret;
-      buf += ret;
-    }
-  }
-  ret = sprintf(buf, "\n");
-  if (ret < 0) return ret;
-  buf += ret;
-  return buf - originalStart;
-}
-
-static ssize_t rows_store(struct kobject *kobj, struct kobj_attribute *attr,
-                          const char *buf, size_t count) {
-  int bufIndex = 0;
-  int row, chars_read;
-  while (buf[bufIndex] != '\0') {
-    if (sscanf(buf + bufIndex, "%d%n", &row, &chars_read) == 1) {
-      if (matrix_check_row(row - 1)) return -EINVAL;
-      matrix_set_row(row - 1, 1);
-    } else {
-      return -EINVAL;
-    }
-    bufIndex += chars_read;  // skip over the characters we just read
-    while (isspace(buf[bufIndex])) bufIndex++;  // skip over whitespace
-  }
-  return count;
-}
-
-// Indicates which columns are completly lit
-static ssize_t col_show(struct kobject *kobj, struct kobj_attribute *attr,
-                        char *buf) {
-  const char(*current_framebuffer)[ROWS][COLS] = matrix_get_pixels();
-  char *originalStart = buf;
-  int ret;
-  for (int col = 0; col < COLS; col++) {
-    bool entireColLit = true;
-    for (int row = 0; row < ROWS; row++) {
-      if (!(*current_framebuffer)[row][col]) {
-        entireColLit = false;
-        break;
-      }
-    }
-    if (entireColLit) {
-      ret = sprintf(buf, "%d ", col + 1);
-      if (ret < 0) return ret;
-      buf += ret;
-    }
-  }
-  ret = sprintf(buf, "\n");
-  if (ret < 0) return ret;
-  buf += ret;
-  return buf - originalStart;
-}
-
-static ssize_t col_store(struct kobject *kobj, struct kobj_attribute *attr,
-                         const char *buf, size_t count) {
-  int bufIndex = 0;
-  int col, chars_read;
-  while (buf[bufIndex] != '\0') {
-    if (sscanf(buf + bufIndex, "%d%n", &col, &chars_read) == 1) {
-      if (matrix_check_col(col - 1)) return -EINVAL;
-      matrix_set_col(col - 1, 1);
-    } else {
-      return -EINVAL;
-    }
-    bufIndex += chars_read;  // skip over the characters we just read
-    while (isspace(buf[bufIndex])) bufIndex++;  // skip over whitespace
-  }
-  return count;
-}
-
-static ssize_t character_show(struct kobject *kobj, struct kobj_attribute *attr,
-                              char *buf) {
-  return sprintf(buf, "%c\n", character);
-}
-
-static ssize_t character_store(struct kobject *kobj,
-                               struct kobj_attribute *attr, const char *buf,
-                               size_t count) {
-  character = buf[0];
-  matrix_set_character(character);
-  return count;
-}
-
-static ssize_t fps_show(struct kobject *kobj, struct kobj_attribute *attr,
-                        char *buf) {
-  return sprintf(buf, "%d\n", fps);
-}
-
-static ssize_t fps_store(struct kobject *kobj, struct kobj_attribute *attr,
-                         const char *buf, size_t count) {
-  int sec = 0;
-  int nsec = 0;
-  int ret = kstrtoint(buf, 10, &fps);
-  if (ret < 0) return ret;
-  if (fps) {
-    nsec = 1000000000 / fps;
-    sec = 0;
-  } else {               // setting to 0 fps
-    sec = __INT_MAX__;   // 63 years
-    nsec = __INT_MAX__;  // 2 seconds
-  }
-  timer_set_frame_interval(sec, nsec);
-  return count;
-}
-
-static ssize_t pixels_show(struct kobject *kobj, struct kobj_attribute *attr,
-                           char *buf) {
-  const char(*current_framebuffer)[ROWS][COLS] = matrix_get_pixels();
-  char *originalStart = buf;  // for calculating length at the the end
-  int ret;
-  for (int row = 0; row < ROWS; row++) {
-    for (int col = 0; col < COLS; col++) {
-      if ((*current_framebuffer)[row][col]) {
-        int ret = sprintf(buf, "%d,%d ", row + 1, col + 1);
-        if (ret < 0) return ret;
-        buf += ret;
-      }
-    }
-  }
-  ret = sprintf(buf, "\n");
-  if (ret < 0) return ret;
-  buf += ret;
-  return buf - originalStart;
-}
-
-static ssize_t pixels_store(struct kobject *kobj, struct kobj_attribute *attr,
-                            const char *buf, size_t count) {
-  int i = 0;
-  int row, col, chars_read;
-  while (buf[i] != '\0') {
-    if (sscanf(buf + i, "%d,%d%n", &col, &row, &chars_read) == 2) {
-      matrix_set_pixel(row - 1, col - 1, 1);
-    } else {
-      return -EINVAL;
-    }
-    i += chars_read;              // skip over the characters we just read
-    while (isspace(buf[i])) i++;  // skip over whitespace
-  }
-  return count;
-}
-
-static ssize_t string_show(struct kobject *kobj, struct kobj_attribute *attr,
-                           char *buf) {
-  return sprintf(buf, "%s\n", string);
-}
-
-static ssize_t string_store(struct kobject *kobj, struct kobj_attribute *attr,
-                            const char *buf, size_t count) {
-  // Ensure that string can fit buf;
-  if (!string) {
-    if (!kmalloc(count, GFP_KERNEL)) return -ENOMEM;
-  } else {
-    if (!krealloc(string, count, GFP_KERNEL)) return -ENOMEM;
-  }
-  // not sure why the compiler requires this, but it doesn't hurt
-  if (string) strcpy(string, buf);
-
-  matrix_set_string(buf);
-  return count;
-}
-
-// Attributes
-
 static struct kobj_attribute rows_attribute =
     __ATTR(rows, 0664, rows_show, rows_store);
-
+// Indicates which columns are completly lit
 static struct kobj_attribute col_attribute =
     __ATTR(cols, 0664, col_show, col_store);
-
+// The character to display
 static struct kobj_attribute character_attribute =
     __ATTR(character, 0664, character_show, character_store);
-
+// The rate at which the entire screen updates (relevent when scrolling through a string)
 static struct kobj_attribute fps_attribute =
     __ATTR(fps, 0664, fps_show, fps_store);
-
+// Which pixels are illuminated
 static struct kobj_attribute pixels_attribute =
     __ATTR(pixels, 0664, pixels_show, pixels_store);
-
+// The string to display
 static struct kobj_attribute string_attribute =
     __ATTR(string, 0664, string_show, string_store);
 
@@ -227,6 +37,7 @@ static struct attribute_group attr_group = {
 
 static struct kobject *led_matrix;
 
+// Initializes the module and matrix/timer
 static int __init led_module_init(void) {
   int retval;
   printk(KERN_INFO "LED Matrix Module loading\n");
@@ -248,9 +59,9 @@ static int __init led_module_init(void) {
     return retval;
   }
   matrix_display_clear();
-  matrix_set_character('A');
-
   timer_init();
+
+  matrix_set_character('A');
 
   printk(KERN_INFO "LED Matrix Module loaded\n");
   return retval;

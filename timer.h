@@ -1,3 +1,4 @@
+#define DEFAULT_SCROLL_FPS 5
 
 // Initialize two timers, one for the scanlines and one to update the framebuffer.
 int timer_init(void);
