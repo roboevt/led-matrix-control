@@ -194,3 +194,7 @@ ssize_t string_store(struct kobject *kobj, struct kobj_attribute *attr,
   }
   return count;
 }
+
+void led_matrix_exit(void) {
+    kfree(string);
+}

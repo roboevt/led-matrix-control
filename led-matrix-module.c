@@ -72,6 +72,7 @@ static void __exit led_module_exit(void) {
   printk(KERN_INFO "Kobject removed\n");
   matrix_free();
   timer_exit();
+  led_matrix_exit();
 }
 
 module_init(led_module_init);
