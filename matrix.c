@@ -1,14 +1,16 @@
 #include "matrix.h"
 
+#include <linux/gpio.h>
 #include <linux/gpio/driver.h>
 #include <linux/kernel.h>
 #include <linux/kobject.h>
 #include <linux/module.h>
 #include <linux/string.h>
-#include <linux/gpio.h>
+#include <stdbool.h>
 
 #include "characters.h"
 
+// GPIO pin numbers
 #define COL_ONE 5
 #define COL_TWO 6
 #define COL_THREE 16
@@ -27,70 +29,68 @@ static int cols[] = {COL_ONE, COL_TWO, COL_THREE, COL_FOUR, COL_FIVE};
 static int rows[] = {ROW_ONE,  ROW_TWO, ROW_THREE, ROW_FOUR,
                      ROW_FIVE, ROW_SIX, ROW_SEVEN};
 
-// Stored as an array of rows that each hold an entire column
-static char** matrix_buffer = NULL;
+// Stored as an array of rows that each hold an entire column. Cols grow when
+// scrolling through text.
+static char** matrixBuffer = NULL;
 
 // The index of the first column of the image that is currently being displayed
-static int matrix_buffer_location = 0;
+static int matrixBufferLocation = 0;
 // The length of the image currently in the buffer
-static int matrix_buffer_length = 0;
+static int matrixBufferLength = 0;
+// current scrolling state
+static bool isMatrixScrolling = false;
+
+static int gpio_init(int pin) {
+  // Check that the GPIO pins are valid
+  if (!gpio_is_valid(pin)) {
+    printk(KERN_INFO "Invalid GPIO: %d\n", pin);
+    return -ENODEV;
+  }
+  // Request the GPIO pins
+  if (gpio_request(pin, "out")) {
+    printk(KERN_INFO "Failed to request GPIO %d\n", pin);
+    return -ENODEV;
+  }
+  // Set the GPIO pins to output
+  if (gpio_direction_output(pin, 0)) {
+    printk(KERN_INFO "Failed to set GPIO direction %d\n", pin);
+    return -ENODEV;
+  } else {  // initialize pins to off
+    gpio_set_value(pin, 0);
+  }
+  return 0;
+}
 
 int matrix_init(void) {
+  int ret;
   for (int i = 0; i < COLS; i++) {
-    // Check that the GPIO pins are valid
-    if (!gpio_is_valid(cols[i])) {
-      printk(KERN_INFO "Invalid GPIO: %d\n", cols[i]);
-      return -ENODEV;
-    }
-    // Request the GPIO pins
-    if (gpio_request(cols[i], "out")) {
-      printk(KERN_INFO "Failed to request GPIO %d\n", cols[i]);
-      return -ENODEV;
-    }
-    // Set the GPIO pins to output
-    if (gpio_direction_output(cols[i], 0)) {
-      printk(KERN_INFO "Failed to set GPIO direction %d\n", cols[i]);
-      return -ENODEV;
-    } else {
-      gpio_set_value(cols[i], 0);
-    }
+    ret = gpio_init(cols[i]);
+    if (ret) return ret;
   }
   for (int i = 0; i < ROWS; i++) {
-    if (!gpio_is_valid(rows[i])) {
-      printk(KERN_INFO "Invalid GPIO: %d\n", rows[i]);
-      return -ENODEV;
-    }
-    if (gpio_request(rows[i], "out")) {
-      printk(KERN_INFO "Failed to request GPIO %d\n", rows[i]);
-      return -ENODEV;
-    }
-    if (gpio_direction_output(rows[i], 0)) {
-      printk(KERN_INFO "Failed to set GPIO direction %d\n", rows[i]);
-      return -ENODEV;
-    } else {
-      gpio_set_value(rows[i], 0);
-    }
+    ret = gpio_init(rows[i]);
+    if (ret) return ret;
   }
   printk(KERN_INFO "GPIO initialized\n");
 
-  // Framebuffer stored as an array of rows that each hold an entire column of the
-  // image. Cols are lengthened when scrolling over characters of a string.
+  // Framebuffer stored as an array of rows that each hold an entire column of
+  // the image. Cols are lengthened when scrolling over characters of a string.
   // Zero allocated
-  matrix_buffer = kzalloc(ROWS * sizeof(char*), GFP_KERNEL);
+  matrixBuffer = kzalloc(ROWS * sizeof(char*), GFP_KERNEL);
   for (int i = 0; i < ROWS; i++) {
-    matrix_buffer[i] = kzalloc(COLS * sizeof(char), GFP_KERNEL);
+    matrixBuffer[i] = kzalloc(COLS * sizeof(char), GFP_KERNEL);
   }
-  matrix_buffer_length = COLS;
+  matrixBufferLength = COLS;
   return 0;
 }
 
 void free_matrix_buffer(void) {
-  if (matrix_buffer != NULL) {
+  if (matrixBuffer != NULL) {
     for (int i = 0; i < ROWS; i++) {
-      kfree(matrix_buffer[i]);
+      kfree(matrixBuffer[i]);
     }
-    kfree(matrix_buffer);
-    matrix_buffer = NULL;
+    kfree(matrixBuffer);
+    matrixBuffer = NULL;
   }
 }
 
@@ -132,86 +132,88 @@ int matrix_check_pixel(int row, int col) {
 // sets the "framebuffer" to all 0s
 void matrix_set_clear(void) {
   for (int i = 0; i < ROWS; i++) {
-    memset(matrix_buffer[i], 0, matrix_buffer_length * sizeof(char));
+    memset(matrixBuffer[i], 0, matrixBufferLength * sizeof(char));
   }
-  matrix_buffer_location = 0;
-  matrix_buffer_length = COLS;
+  matrixBufferLocation = 0;
+  matrixBufferLength = COLS;
+  isMatrixScrolling = false;
+}
+
+static void disable_scrolling(void) {
+  matrixBufferLocation = 0;
+  matrixBufferLength = COLS;
+  isMatrixScrolling = false;
 }
 
 void matrix_set_row(int row, int val) {
   if (matrix_check_row(row)) return;
   for (int i = 0; i < COLS; i++) {
-    matrix_buffer[row][i] = val;
+    matrixBuffer[row][i] = val;
   }
-  matrix_buffer_location = 0;
-  matrix_buffer_length = COLS;
+  disable_scrolling();
 }
 
 void matrix_set_col(int col, int val) {
   if (matrix_check_col(col)) return;
   for (int i = 0; i < ROWS; i++) {
-    matrix_buffer[i][col] = val;
+    matrixBuffer[i][col] = val;
   }
-  matrix_buffer_location = 0;
-  matrix_buffer_length = COLS;
+  disable_scrolling();
 }
 
 void matrix_set_pixel(int row, int col, int val) {
-  if(matrix_check_pixel(row, col)) return;
-  matrix_buffer[row][col] = val;
-  matrix_buffer_location = 0;
-  matrix_buffer_length = COLS;
+  if (matrix_check_pixel(row, col)) return;
+  matrixBuffer[row][col] = val;
+  disable_scrolling();
 }
 
 void matrix_set_character(char c) {
-  const char(*character_map)[ROWS][COLS] = character_get_array(c);
-  for(int i = 0; i < ROWS; i++) {
-    memcpy(matrix_buffer[i], (*character_map)[i], COLS);
+  const char(*characterMap)[ROWS][COLS] = character_get_array(c);
+  for (int i = 0; i < ROWS; i++) {
+    memcpy(matrixBuffer[i], (*characterMap)[i], COLS);
   }
-  matrix_buffer_location = 0;
-  matrix_buffer_length = COLS;
+  disable_scrolling();
 }
 
 void matrix_set_string(const char* str) {
   // copy the string so we can modify it
-  char* str_copy = kmalloc(strlen(str) + 1, GFP_KERNEL);
-  strcpy(str_copy, str);
+  char* strCopy = kmalloc(strlen(str) + 1, GFP_KERNEL);
+  strcpy(strCopy, str);
   // remove any newlines or returns
-  str_copy[strcspn(str_copy, "\r\n")] = 0;
-  
+  strCopy[strcspn(strCopy, "\r\n")] = 0;
+
   matrix_set_clear();
 
-  // we need space for each character and a space between the characters, and a blank space at the beginning
-  matrix_buffer_length = strlen(str_copy) * (COLS + 1) + COLS;
+  // we need space for each character and a space between the characters, and a
+  // blank space at the beginning
+  matrixBufferLength = strlen(strCopy) * (COLS + 1) + COLS;
 
   for (int row = 0; row < ROWS; row++) {
-    matrix_buffer[row] = krealloc(matrix_buffer[row], matrix_buffer_length + COLS, GFP_KERNEL);
+    matrixBuffer[row] =
+        krealloc(matrixBuffer[row], matrixBufferLength + COLS, GFP_KERNEL);
   }
 
   // copy each character of str into the string buffer
-  for (int i = 0; i < strlen(str_copy); i++) {
-    const char(*character_map)[ROWS][COLS] = character_get_array(str_copy[i]);
+  for (int i = 0; i < strlen(strCopy); i++) {
+    const char(*characterMap)[ROWS][COLS] = character_get_array(strCopy[i]);
     for (int row = 0; row < ROWS; row++) {
       for (int col = 0; col < COLS; col++) {
         // copy the character map into the string buffer, and leave 1 space
         // between characters and one screen black at the beggining
-        matrix_buffer[row][COLS + i * (COLS + 1) + col] = (*character_map)[row][col];
+        matrixBuffer[row][COLS + i * (COLS + 1) + col] =
+            (*characterMap)[row][col];
       }
     }
   }
   // restart at the beggining
-  matrix_buffer_location = 0;
-
-  kfree(str_copy);
+  matrixBufferLocation = 0;
+  isMatrixScrolling = true;
+  kfree(strCopy);
 }
 
-const char** matrix_get_pixels(void) {
-  return (const char**)matrix_buffer;
-}
+const char** matrix_get_pixels(void) { return (const char**)matrixBuffer; }
 
-int matrix_get_location(void) {
-  return matrix_buffer_location;
-}
+int matrix_get_location(void) { return matrixBufferLocation; }
 
 // turns off all GPIO pins
 void matrix_display_clear(void) {
@@ -226,7 +228,7 @@ void matrix_display_clear(void) {
 void matrix_display_row(int row) {
   if (matrix_check_row(row)) return;
   for (int i = 0; i < COLS; i++) {
-    gpio_set_value(cols[i], matrix_buffer[row][i]);
+    gpio_set_value(cols[i], matrixBuffer[row][i]);
   }
   for (int i = 0; i < ROWS; i++) {
     gpio_set_value(rows[i], i == row ? 0 : 1);
@@ -235,9 +237,9 @@ void matrix_display_row(int row) {
 
 void matrix_display_col(int col) {
   if (matrix_check_col(col)) return;
-  if(matrix_buffer_location >= matrix_buffer_length) return;
+  if (matrixBufferLocation >= matrixBufferLength) return;
   for (int i = 0; i < ROWS; i++) {
-    gpio_set_value(rows[i], matrix_buffer[i][col + matrix_buffer_location]);
+    gpio_set_value(rows[i], matrixBuffer[i][col + matrixBufferLocation]);
   }
   for (int i = 0; i < COLS; i++) {
     gpio_set_value(cols[i], i == col ? 0 : 1);
@@ -245,8 +247,8 @@ void matrix_display_col(int col) {
 }
 
 void matrix_display_scroll(void) {
-  if (matrix_buffer == NULL) return;
-  if (matrix_buffer_location >= matrix_buffer_length)
-    matrix_buffer_location = 0;
-  matrix_buffer_location++;
+  if (!isMatrixScrolling) return;
+  if (matrixBuffer == NULL) return;
+  if (matrixBufferLocation >= matrixBufferLength) matrixBufferLocation = 0;
+  matrixBufferLocation++;
 }

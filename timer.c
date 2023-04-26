@@ -44,7 +44,7 @@ static int updateScanLine(void *data) {
       currentCol = 1;
     }
     set_current_state(TASK_INTERRUPTIBLE);
-    schedule();
+    schedule();  // Yield to other processes until timer expires again
     if (kthread_should_stop()) {
       break;
     }
@@ -58,7 +58,7 @@ static int updateFrame(void *data) {
   while (1) {
     matrix_display_scroll();
     set_current_state(TASK_INTERRUPTIBLE);
-    schedule();
+    schedule();  // Yield to other processes until timer expires again
     if (kthread_should_stop()) {
       break;
     }

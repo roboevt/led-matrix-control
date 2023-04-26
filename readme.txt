@@ -10,19 +10,23 @@ Installation:
     make -C $LINUX_SOURCE ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- M=$PWD modules
 
     Copy the resulting led-matrix.ko file to your raspberry pi and install it with sudo insmod led-matrix.ko.
-    For more information check out this studio:
+    For more information see this studio:
     (https://classes.engineering.wustl.edu/cse422/studios/04_modules.html)
+
+    Build files can be cleaned up with the command: make clean
 
 Check out the /sys/led-matrix folder for the interface to the module.
     rows/cols - A list (seperated by whitespace) of the fully illuminated rows or columns. Write new values to update.
+        Negative values turn off the specific line.
     pixels - A list (seperated by whitespace) of the currently lit pixels. Write as coordinate pairs (x,y x2,y2, etc.)
+        Negative values turn off the specified pixel.
     character - writing a character (ascii [48-122]) will display that character to the matrix.
     fps - This attribute controls the number of new frames per second when scrolling through a string.
-        Disable by setting it to 0.
-    string - A string to scroll through on the display
+        Will be set to 0 when a row, col, pixel, or character is set, and return to previous value with a new string.
+    string - A string to scroll through on the display.
     
 Explanation of components (see header files as well):
-    led-matrix-module - Main code for actual kernel buffer. Initializes and registers sysfs attributes. It also
+    led-matrix-module - Main code for actual kernel object. Initializes and registers sysfs attributes. It also
         initializes the matrix and timer code, and cleans everything up when the module is unloaded.
     
     led-matrix-module-util - Code for how the attributs should be stored and loaded. Interface from attribute to 

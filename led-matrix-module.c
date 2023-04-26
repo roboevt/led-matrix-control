@@ -39,24 +39,24 @@ static struct kobject *led_matrix;
 
 // Initializes the module and matrix/timer
 static int __init led_module_init(void) {
-  int retval;
+  int ret;
   printk(KERN_INFO "LED Matrix Module loading\n");
 
   led_matrix = kobject_create_and_add("led-matrix", NULL);
   if (!led_matrix) return -ENOMEM;
 
   // Create the files associated with this kobject
-  retval = sysfs_create_group(led_matrix, &attr_group);
-  if (retval) {
+  ret = sysfs_create_group(led_matrix, &attr_group);
+  if (ret) {
     kobject_put(led_matrix);
-    return retval;
+    return ret;
   }
   printk(KERN_INFO "Kobject created\n");
 
-  retval = matrix_init();
-  if (retval) {
+  ret = matrix_init();
+  if (ret) {
     kobject_put(led_matrix);
-    return retval;
+    return ret;
   }
   matrix_display_clear();
   timer_init();
@@ -64,7 +64,7 @@ static int __init led_module_init(void) {
   matrix_set_character('A');
 
   printk(KERN_INFO "LED Matrix Module loaded\n");
-  return retval;
+  return ret;
 }
 
 static void __exit led_module_exit(void) {

@@ -687,7 +687,7 @@ static const char char_z[ROWS][COLS] = {
     {0, 0, 1, 0, 0},
     {1, 1, 1, 1, 1}
 };
-
+// For any unmapped chars
 static const char char_unknown[ROWS][COLS] = {
     {1, 1, 1, 1, 1},
     {1, 1, 1, 1, 1},
@@ -700,7 +700,6 @@ static const char char_unknown[ROWS][COLS] = {
 
 const char (*character_get_array(char character))[ROWS][COLS] {
     // c switch statements are just jump tables, but a char is just a number so it still works
-    printk(KERN_INFO "character_get_array(%c)\n", character);
     switch (character) {
         case ' ':
         return &char_space;
