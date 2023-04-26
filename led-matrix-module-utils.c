@@ -1,6 +1,7 @@
 #include <linux/ctype.h>
 #include <linux/slab.h>
 #include <linux/string.h>
+#include <stdbool.h>
 
 #include "led-matrix-module.h"
 #include "matrix.h"
@@ -12,13 +13,14 @@ static char *string = NULL;
 
 ssize_t rows_show(struct kobject *kobj, struct kobj_attribute *attr,
                   char *buf) {
-  const char(*current_framebuffer)[ROWS][COLS] = matrix_get_pixels();
+  // const char(*current_framebuffer)[ROWS][COLS] = matrix_get_pixels();
+  const char **current_framebuffer = matrix_get_pixels();
   char *originalStart = buf;
   int ret;
   for (int row = 0; row < ROWS; row++) {
     bool entireRowLit = true;
     for (int col = 0; col < COLS; col++) {
-      if (!(*current_framebuffer)[row][col]) {
+      if (!(current_framebuffer)[row][col]) {
         entireRowLit = false;
         break;
       }
@@ -38,15 +40,33 @@ ssize_t rows_show(struct kobject *kobj, struct kobj_attribute *attr,
 ssize_t rows_store(struct kobject *kobj, struct kobj_attribute *attr,
                    const char *buf, size_t count) {
   int bufIndex = 0;
-  int row, chars_read;
+  int row, charsRead;
+
   while (buf[bufIndex] != '\0') {
-    if (sscanf(buf + bufIndex, "%d%n", &row, &chars_read) == 1) {
-      if (matrix_check_row(row - 1)) return -EINVAL;
-      matrix_set_row(row - 1, 1);
+    if (sscanf(buf + bufIndex, "%d%n", &row, &charsRead) == 1) {
+      // we have read a row number
+      if (row == 0) {
+        // clear the matrix
+        matrix_set_clear();
+        return count;
+      }
+      if (matrix_check_row(row - 1) && matrix_check_row((-row) - 1)) {
+        // requested row is invalid
+        return -EINVAL;
+      }
+      // requested row is valid
+      if (matrix_check_row(row - 1)) {
+        // requested row is negative, so clear row
+        matrix_set_row((-row) - 1, 0);
+      } else {
+        // requested row is positive, so set row
+        matrix_set_row(row - 1, 1);
+      }
     } else {
+      // read failed
       return -EINVAL;
     }
-    bufIndex += chars_read;  // skip over the characters we just read
+    bufIndex += charsRead;  // skip over the characters we just read
     while (isspace(buf[bufIndex])) bufIndex++;  // skip over whitespace
   }
   return count;
@@ -54,18 +74,22 @@ ssize_t rows_store(struct kobject *kobj, struct kobj_attribute *attr,
 
 // Indicates which columns are completly lit
 ssize_t col_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf) {
-  const char(*current_framebuffer)[ROWS][COLS] = matrix_get_pixels();
+  // const char(*current_framebuffer)[ROWS][COLS] = matrix_get_pixels();
+  const char **current_framebuffer = matrix_get_pixels();
   char *originalStart = buf;
   int ret;
   for (int col = 0; col < COLS; col++) {
     bool entireColLit = true;
     for (int row = 0; row < ROWS; row++) {
-      if (!(*current_framebuffer)[row][col]) {
+      printk(KERN_INFO "row %d, col %d, val %d\n", row, col,
+             (current_framebuffer)[row][col]);
+      if (!(current_framebuffer)[row][col]) {
         entireColLit = false;
         break;
       }
     }
     if (entireColLit) {
+      printk(KERN_INFO "col %d is lit\n", col + 1);
       ret = sprintf(buf, "%d ", col + 1);
       if (ret < 0) return ret;
       buf += ret;
@@ -80,15 +104,33 @@ ssize_t col_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf) {
 ssize_t col_store(struct kobject *kobj, struct kobj_attribute *attr,
                   const char *buf, size_t count) {
   int bufIndex = 0;
-  int col, chars_read;
+  int col, charsRead;
+
   while (buf[bufIndex] != '\0') {
-    if (sscanf(buf + bufIndex, "%d%n", &col, &chars_read) == 1) {
-      if (matrix_check_col(col - 1)) return -EINVAL;
-      matrix_set_col(col - 1, 1);
+    if (sscanf(buf + bufIndex, "%d%n", &col, &charsRead) == 1) {
+      // we have read a col number
+      if (col == 0) {
+        // clear the matrix
+        matrix_set_clear();
+        return count;
+      }
+      if (matrix_check_col(col - 1) && matrix_check_col((-col) - 1)) {
+        // requested col is invalid
+        return -EINVAL;
+      }
+      // requested col is valid
+      if (matrix_check_col(col - 1)) {
+        // requested col is negative, so clear col
+        matrix_set_col((-col) - 1, 0);
+      } else {
+        // requested col is positive, so set col
+        matrix_set_col(col - 1, 1);
+      }
     } else {
+      // read failed
       return -EINVAL;
     }
-    bufIndex += chars_read;  // skip over the characters we just read
+    bufIndex += charsRead;  // skip over the characters we just read
     while (isspace(buf[bufIndex])) bufIndex++;  // skip over whitespace
   }
   return count;
@@ -134,13 +176,14 @@ ssize_t fps_store(struct kobject *kobj, struct kobj_attribute *attr,
 
 ssize_t pixels_show(struct kobject *kobj, struct kobj_attribute *attr,
                     char *buf) {
-  const char(*current_framebuffer)[ROWS][COLS] = matrix_get_pixels();
+  // const char(*current_framebuffer)[ROWS][COLS] = matrix_get_pixels();
+  const char **current_framebuffer = matrix_get_pixels();
   char *originalStart = buf;  // for calculating length at the the end
   int ret;
 
   for (int row = 0; row < ROWS; row++) {
     for (int col = 0; col < COLS; col++) {
-      if ((*current_framebuffer)[row][col]) {
+      if ((current_framebuffer)[row][col]) {
         int ret = sprintf(buf, "%d,%d ", row + 1, col + 1);
         if (ret < 0) return ret;
         buf += ret;
@@ -156,14 +199,32 @@ ssize_t pixels_show(struct kobject *kobj, struct kobj_attribute *attr,
 ssize_t pixels_store(struct kobject *kobj, struct kobj_attribute *attr,
                      const char *buf, size_t count) {
   int i = 0;
-  int row, col, chars_read;
+  int row, col, charsRead;
   while (buf[i] != '\0') {
-    if (sscanf(buf + i, "%d,%d%n", &col, &row, &chars_read) == 2) {
+    if (sscanf(buf + i, "%d,%d%n", &col, &row, &charsRead) == 2) {
+      // we have read a row and col number
+      if (row == 0 && col == 0) {
+        // clear the matrix
+        matrix_set_clear();
+        return count;
+      }
+      if(matrix_check_pixel(row - 1, col - 1) && matrix_check_pixel(row - 1, (-col) - 1)) {
+        // requested pixel is invalid
+        return -EINVAL;
+      }
+      // requested pixel is valid
+      if (matrix_check_pixel(row - 1, col - 1)) {
+        // requested pixel is negative, so clear pixel
+        matrix_set_pixel(row - 1, (-col) - 1, 0);
+      } else {
+        // requested pixel is positive, so set pixel
+        matrix_set_pixel(row - 1, col - 1, 1);
+      }
       matrix_set_pixel(row - 1, col - 1, 1);
     } else {
       return -EINVAL;
     }
-    i += chars_read;              // skip over the characters we just read
+    i += charsRead;               // skip over the characters we just read
     while (isspace(buf[i])) i++;  // skip over whitespace
   }
   return count;
@@ -195,6 +256,4 @@ ssize_t string_store(struct kobject *kobj, struct kobj_attribute *attr,
   return count;
 }
 
-void led_matrix_exit(void) {
-    kfree(string);
-}
+void led_matrix_exit(void) { kfree(string); }
