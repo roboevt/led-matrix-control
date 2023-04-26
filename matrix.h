@@ -27,9 +27,6 @@ void matrix_set_character(char c);
 void matrix_set_string(const char *str);
 
 // get the current framebuffer
-// const char (*matrix_get_pixels(void))[ROWS][COLS];
-
-// get the current framebuffer
 const char** matrix_get_pixels(void);
 // get the current framebuffer location (column)
 int matrix_get_location(void);

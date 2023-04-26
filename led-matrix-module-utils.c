@@ -13,7 +13,6 @@ static char *string = NULL;
 
 ssize_t rows_show(struct kobject *kobj, struct kobj_attribute *attr,
                   char *buf) {
-  // const char(*current_framebuffer)[ROWS][COLS] = matrix_get_pixels();
   const char **current_framebuffer = matrix_get_pixels();
   char *originalStart = buf;
   int ret;
@@ -74,7 +73,6 @@ ssize_t rows_store(struct kobject *kobj, struct kobj_attribute *attr,
 
 // Indicates which columns are completly lit
 ssize_t col_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf) {
-  // const char(*current_framebuffer)[ROWS][COLS] = matrix_get_pixels();
   const char **current_framebuffer = matrix_get_pixels();
   char *originalStart = buf;
   int ret;
@@ -176,7 +174,6 @@ ssize_t fps_store(struct kobject *kobj, struct kobj_attribute *attr,
 
 ssize_t pixels_show(struct kobject *kobj, struct kobj_attribute *attr,
                     char *buf) {
-  // const char(*current_framebuffer)[ROWS][COLS] = matrix_get_pixels();
   const char **current_framebuffer = matrix_get_pixels();
   char *originalStart = buf;  // for calculating length at the the end
   int ret;

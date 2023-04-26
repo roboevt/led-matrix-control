@@ -205,10 +205,6 @@ void matrix_set_string(const char* str) {
   kfree(str_copy);
 }
 
-// const char (*matrix_get_pixels(void))[ROWS][COLS] {
-//   return (const char(*)[ROWS][COLS])matrix_buffer;
-// }
-
 const char** matrix_get_pixels(void) {
   return (const char**)matrix_buffer;
 }
