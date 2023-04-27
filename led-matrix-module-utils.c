@@ -153,6 +153,7 @@ ssize_t character_store(struct kobject *kobj, struct kobj_attribute *attr,
 ssize_t fps_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf) {
   return sprintf(buf, "%d\n", fps);
 }
+
 // converts fps to period and updates the timer
 static void set_fps(void) {
   int sec = 0;
@@ -188,7 +189,7 @@ ssize_t pixels_show(struct kobject *kobj, struct kobj_attribute *attr,
   for (int row = 0; row < ROWS; row++) {
     for (int col = 0; col < COLS; col++) {
       if ((currentFramebuffer)[row][col]) {
-        int ret = sprintf(buf, "%d,%d ", row + 1, col + 1);
+        int ret = sprintf(buf, "%d,%d ", col + 1, row + 1);
         if (ret < 0) return ret;
         buf += ret;
       }

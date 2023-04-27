@@ -235,13 +235,17 @@ void matrix_display_row(int row) {
   }
 }
 
+// display one column of the framebuffer to the matrix
+// This is what is currently used by the timer
 void matrix_display_col(int col) {
   if (matrix_check_col(col)) return;
   if (matrixBufferLocation >= matrixBufferLength) return;
   for (int i = 0; i < ROWS; i++) {
+    // set the value of the row to the value of the pixel in the framebuffer
     gpio_set_value(rows[i], matrixBuffer[i][col + matrixBufferLocation]);
   }
   for (int i = 0; i < COLS; i++) {
+    // and only turn on the column that we are currently displaying
     gpio_set_value(cols[i], i == col ? 0 : 1);
   }
 }
