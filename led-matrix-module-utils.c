@@ -1,6 +1,5 @@
 #include <linux/ctype.h>
 #include <linux/slab.h>
-#include <linux/string.h>
 #include <stdbool.h>
 
 #include "led-matrix-module.h"
@@ -175,7 +174,7 @@ ssize_t fps_store(struct kobject *kobj, struct kobj_attribute *attr,
                   const char *buf, size_t count) {
   int ret = kstrtoint(buf, 10, &fps);
   if (ret < 0) return ret;
-
+  if(fps < 0) return -EINVAL;
   set_fps();
   return count;
 }

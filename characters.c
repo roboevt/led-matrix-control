@@ -1,7 +1,5 @@
 #include "characters.h"
 
-#include <linux/module.h> 
-
 static const char char_space[ROWS][COLS] = {
     {0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0},

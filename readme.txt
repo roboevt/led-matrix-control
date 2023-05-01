@@ -32,16 +32,32 @@ Explanation of components (see header files as well):
     led-matrix-module-util - Code for how the attributs should be stored and loaded. Interface from attribute to 
         module code.
         rows_shows returns a string containing a list of all the rows that are currently entirely lit.
-        rows_store takes a string of whitespace seperated rows and sets them to be lit
+        rows_store takes a string of whitespace seperated rows and sets them to be lit. Negative numbers clear
+            the specified rows.
+            example: (echo 1 2 4 > rows)
+                     (echo -1 -5 > rows)
+                     (echo 1 3 -4 > rows)
         cols_* are the same as the rows functions, but for the columns of the matrix
         character_show returns the most recently displayed character.
-        character_store sets the character to be displayed. The " " character clears the display.
+        character_store sets the character to be displayed. The " " character clears the display. Note, unkown
+            characters will show up as every pixel lit. See characters.c for the currently mapped chars.
+            example: (echo A > character)
+                     (echo "?" > character)
         fps_show returns the current framerate.
         fps_store calculates the period appropriate for a desired framerate and sets the timer delay accordingly.
+            example: (echo 10 > fps)
+                     (echo 0 > fps) - Disables animation/scrolling
         pixels_show returns a list of currently lit pixels, as coordinate pairs seperated by spaces.
-        pixels_store sets the pixels that should be lit, read as coordinate pairs seperated by whitespace.
+        pixels_store sets the pixels that should be lit, read as coordinate pairs seperated by whitespace. Negative
+            values clear the specified pixel. If you create an interesting pattern, read out the current pixels 
+            and save them. You can write them back to display the same pattern again.
+            example: (echo 1,2 > pixels)
+                     (echo 2,2 3,5 5,1 > pixels)
+                     (echo 1,2 -2,2 -1,5 > pixels)
         string_show returns the most recently requested string
         string_store sets a string that should be scrolled on the display.
+            example: (echo test > string)
+                     (echo "this is a longer testing string" > string)
 
     matrix - Code that directly controls the gpio pins. Exposes a simpler interface for writing information to the
         display as opposed to the gpio pins directly.

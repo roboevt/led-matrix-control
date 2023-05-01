@@ -1,11 +1,6 @@
 #include <linux/delay.h>
 #include <linux/hrtimer.h>
 #include <linux/kthread.h>
-#include <linux/module.h>
-#include <linux/sched.h>
-#include <linux/timer.h>
-#include <linux/types.h>
-#include <stddef.h>
 
 #include "matrix.h"
 

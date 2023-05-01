@@ -1,10 +1,6 @@
 #include "matrix.h"
 
 #include <linux/gpio.h>
-#include <linux/gpio/driver.h>
-#include <linux/kernel.h>
-#include <linux/kobject.h>
-#include <linux/module.h>
 #include <linux/string.h>
 #include <stdbool.h>
 
