@@ -38,6 +38,7 @@ static int updateScanLine(void *data) {
       matrix_display_col(0);
       currentCol = 1;
     }
+
     set_current_state(TASK_INTERRUPTIBLE);
     schedule();  // Yield to other processes until timer expires again
     if (kthread_should_stop()) {
@@ -58,6 +59,7 @@ static int updateFrame(void *data) {
       break;
     }
   }
+  
   printk(KERN_INFO "updateFrame terminating.\n");
   return 0;
 }

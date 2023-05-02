@@ -95,18 +95,22 @@ int matrix_free(void) {
   for (int i = 0; i < COLS; i++) {
     gpio_free(cols[i]);
   }
+
   for (int i = 0; i < ROWS; i++) {
     gpio_free(rows[i]);
   }
+
   free_matrix_buffer();
   printk(KERN_INFO "GPIO cleaned up\n");
   return 0;
 }
 
+//bounds checks
+
 int matrix_check_col(int col) {
   if (col < 0 || col >= COLS) {
     printk(KERN_INFO "Invalid col: %d\n", col);
-    return -1;
+    return EINVAL;
   }
   return 0;
 }
@@ -114,14 +118,14 @@ int matrix_check_col(int col) {
 int matrix_check_row(int row) {
   if (row < 0 || row >= ROWS) {
     printk(KERN_INFO "Invalid row: %d\n", row);
-    return -1;
+    return EINVAL;
   }
   return 0;
 }
 
 int matrix_check_pixel(int row, int col) {
-  if (matrix_check_row(row)) return -1;
-  if (matrix_check_col(col)) return -1;
+  if (matrix_check_row(row)) return EINVAL;
+  if (matrix_check_col(col)) return EINVAL;
   return 0;
 }
 
@@ -175,7 +179,9 @@ void matrix_set_string(const char* str) {
   // copy the string so we can modify it
   char* strCopy = kmalloc(strlen(str) + 1, GFP_KERNEL);
   strcpy(strCopy, str);
+
   // remove any newlines or returns
+  // https://stackoverflow.com/a/28462221
   strCopy[strcspn(strCopy, "\r\n")] = 0;
 
   matrix_set_clear();
@@ -195,7 +201,7 @@ void matrix_set_string(const char* str) {
     for (int row = 0; row < ROWS; row++) {
       for (int col = 0; col < COLS; col++) {
         // copy the character map into the string buffer, and leave 1 space
-        // between characters and one screen black at the beggining
+        // between characters and one screen width blank at the beggining
         matrixBuffer[row][COLS + i * (COLS + 1) + col] =
             (*characterMap)[row][col];
       }
@@ -240,12 +246,14 @@ void matrix_display_col(int col) {
     // set the value of the row to the value of the pixel in the framebuffer
     gpio_set_value(rows[i], matrixBuffer[i][col + matrixBufferLocation]);
   }
+
   for (int i = 0; i < COLS; i++) {
     // and only turn on the column that we are currently displaying
     gpio_set_value(cols[i], i == col ? 0 : 1);
   }
 }
 
+// display the next column of the framebuffer to the matrix, wrap at end
 void matrix_display_scroll(void) {
   if (!isMatrixScrolling) return;
   if (matrixBuffer == NULL) return;

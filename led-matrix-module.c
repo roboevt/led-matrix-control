@@ -2,26 +2,28 @@
 #include "timer.h"
 #include "led-matrix-module.h"
 
+#define PERMISIONS 0664  // rw-rw-r--
+
 // Link getters and setters to the kernel attributes
 
 // Indicates which rows are completly lit
 static struct kobj_attribute rows_attribute =
-    __ATTR(rows, 0664, rows_show, rows_store);
+    __ATTR(rows, PERMISIONS, rows_show, rows_store);
 // Indicates which columns are completly lit
 static struct kobj_attribute col_attribute =
-    __ATTR(cols, 0664, col_show, col_store);
+    __ATTR(cols, PERMISIONS, col_show, col_store);
 // The character to display
 static struct kobj_attribute character_attribute =
-    __ATTR(character, 0664, character_show, character_store);
+    __ATTR(character, PERMISIONS, character_show, character_store);
 // The rate at which the entire screen updates (relevent when scrolling through a string)
 static struct kobj_attribute fps_attribute =
-    __ATTR(fps, 0664, fps_show, fps_store);
+    __ATTR(fps, PERMISIONS, fps_show, fps_store);
 // Which pixels are illuminated
 static struct kobj_attribute pixels_attribute =
-    __ATTR(pixels, 0664, pixels_show, pixels_store);
+    __ATTR(pixels, PERMISIONS, pixels_show, pixels_store);
 // The string to display
 static struct kobj_attribute string_attribute =
-    __ATTR(string, 0664, string_show, string_store);
+    __ATTR(string, PERMISIONS, string_show, string_store);
 
 static struct attribute *attrs[] = {&rows_attribute.attr,
                                     &col_attribute.attr,

@@ -6,16 +6,18 @@
 #include "matrix.h"
 #include "timer.h"
 
-static char character = 'A';
+static char character = 'A';  // default starting character
 static int fps = 0;
 static int scrollingFps = DEFAULT_SCROLL_FPS;
 static char *string = NULL;
 
+// Which rows are completly lit
 ssize_t rows_show(struct kobject *kobj, struct kobj_attribute *attr,
                   char *buf) {
   const char **currentFramebuffer = matrix_get_pixels();
   char *originalStart = buf;
   int ret;
+
   for (int row = 0; row < ROWS; row++) {
     bool entireRowLit = true;
     for (int col = 0; col < COLS; col++) {
@@ -24,16 +26,18 @@ ssize_t rows_show(struct kobject *kobj, struct kobj_attribute *attr,
         break;
       }
     }
-    if (entireRowLit) {
+
+    if (entireRowLit) {  
       ret = sprintf(buf, "%d ", row + 1);
       if (ret < 0) return ret;
-      buf += ret;
+      buf += ret;  // advance the buffer pointer
     }
   }
+
   ret = sprintf(buf, "\n");
   if (ret < 0) return ret;
   buf += ret;
-  return buf - originalStart;
+  return buf - originalStart;  // return the length of the string
 }
 
 ssize_t rows_store(struct kobject *kobj, struct kobj_attribute *attr,
@@ -77,16 +81,19 @@ ssize_t col_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf) {
   const char **currentFramebuffer = matrix_get_pixels();
   char *originalStart = buf;
   int ret;
+
   for (int col = 0; col < COLS; col++) {
     bool entireColLit = true;
     for (int row = 0; row < ROWS; row++) {
       printk(KERN_INFO "row %d, col %d, val %d\n", row, col,
              (currentFramebuffer)[row][col]);
+
       if (!(currentFramebuffer)[row][col]) {
         entireColLit = false;
         break;
       }
     }
+
     if (entireColLit) {
       printk(KERN_INFO "col %d is lit\n", col + 1);
       ret = sprintf(buf, "%d ", col + 1);
@@ -94,6 +101,7 @@ ssize_t col_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf) {
       buf += ret;
     }
   }
+
   ret = sprintf(buf, "\n");
   if (ret < 0) return ret;
   buf += ret;
@@ -153,14 +161,14 @@ ssize_t fps_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf) {
   return sprintf(buf, "%d\n", fps);
 }
 
-// converts fps to period and updates the timer
+// converts fps frequency to period and updates the timer
 static void set_fps(void) {
   int sec = 0;
   int nsec = 0;
   if (fps) {
     // period -> frequency, 1 billion nanoseconds in a second
     nsec = 1000000000 / fps;
-    sec = 0;
+    sec = 0;  // seconds not needed
     // remember the fps for scrolling only when not setting fps to 0
     scrollingFps = fps;
   } else {               // setting to 0 fps
@@ -194,6 +202,7 @@ ssize_t pixels_show(struct kobject *kobj, struct kobj_attribute *attr,
       }
     }
   }
+
   ret = sprintf(buf, "\n");
   if (ret < 0) return ret;
   buf += ret;
@@ -226,12 +235,14 @@ ssize_t pixels_store(struct kobject *kobj, struct kobj_attribute *attr,
         matrix_set_pixel(row - 1, col - 1, 1);
       }
       matrix_set_pixel(row - 1, col - 1, 1);
-    } else {
+    } else {  // read failed, didn't match format
       return -EINVAL;
     }
+
     i += charsRead;               // skip over the characters we just read
     while (isspace(buf[i])) i++;  // skip over whitespace
   }
+
   fps = 0;
   return count;
 }
